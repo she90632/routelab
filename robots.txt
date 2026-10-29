@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://she90632.github.io/routelab/sitemap.xml
