@@ -1,0 +1,49 @@
+# Route Lab site
+
+Portfolio landing page for Route Lab: mobile itinerary pages for group trips to Japan and Taiwan.
+Plain HTML, no build step, no tracking. Every page here is our own sample project, not client work.
+
+```
+index.html            landing page (English)
+demos/
+  tokyo-5day-en/      Tokyo 5 days, English      (sample)
+  tokyo-5day/         Tokyo 5 days, Chinese      (sample)
+  tainan-2day-en/     Tainan 2 days, English     (sample)
+  tainan-2day/        Tainan 2 days, Chinese     (sample)
+  shop-faq-en/        made-up bakery chat + order sheet, English (sample)
+  shop-faq/           same, Chinese              (sample)
+.nojekyll             tells GitHub Pages to serve the files as they are (no Jekyll)
+sync-demos.sh         copies the latest demos from ../demos
+```
+
+Status: **local only.** No GitHub repository exists yet and nothing has been pushed.
+
+## Before publishing
+
+1. Run `./sync-demos.sh` so the demo copies match `../demos/`, then `git diff --stat` to see what changed.
+2. Open `index.html` locally and click every link.
+3. Pricing section: when the Fiverr gig and Gumroad product are live, add their URLs (see the `TODO` comment in `index.html`). Until then the page says the listings are "opening soon".
+4. Decide whether to show a contact email. It is left off on purpose: Fiverr does not allow off-platform contact details, and this site may be linked from the gig.
+
+## Publishing to GitHub Pages (later, by YU CHUNG CHEN)
+
+Needs a **GitHub account** (free). Free accounts can only publish Pages from a **public** repository, so everything in this folder becomes public.
+
+1. Sign up at github.com, preferably with the Route Lab username (for example `routelab`, if available) and verify the email address. GitHub Pages only builds after a push by someone with a verified email.
+2. Create a new **public** repository, empty (no README, no license), for example `routelab` or `routelab.github.io`.
+   - Repository named `<username>.github.io` → site at `https://<username>.github.io/`
+   - Any other name, e.g. `routelab-site` → site at `https://<username>.github.io/routelab-site/`
+3. Push this local repo (sign in when git asks; GitHub needs a personal access token or GitHub CLI login instead of a password):
+   ```sh
+   git remote add origin https://github.com/<username>/<repo>.git
+   git push -u origin main
+   ```
+   Or skip git: on the empty repository page, choose "uploading an existing file" and drag in the contents of this folder. Include the `demos` folder. Check that `.nojekyll` got uploaded, since hidden files are easy to miss.
+4. Repository **Settings → Pages → Build and deployment**: Source **Deploy from a branch**, Branch **main**, folder **/ (root)**, **Save**.
+5. Wait a few minutes (GitHub says up to 10), then open the address shown on the Pages screen.
+
+Links on the landing page are relative (`demos/tokyo-5day-en/`), so they work under either address.
+
+## Updating later
+
+Edit, `./sync-demos.sh` if the demos changed, commit, push. The site rebuilds automatically.

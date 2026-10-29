@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>府城兩日｜台南可選行程（範例）</title>
+<style>
+:root{
+  --paper:#f3e9d6; --paper2:#ebdcc2; --ink:#2a1c14; --ink2:#6a5444; --brick:#9b2c22; --brick-d:#7a1f18; --gold:#c08a2d; --rule:#d2bd9a; --teal:#2f6b63;
+  --serif:"Noto Serif CJK TC","Noto Serif TC","Songti TC","PMingLiU",serif;
+  --sans:"Noto Sans CJK TC","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:60px}
+body{margin:0;color:var(--ink);font:16px/1.75 var(--sans);background:var(--paper);
+  background-image:radial-gradient(rgba(120,80,40,.07) 1px,transparent 1px);background-size:5px 5px}
+a{color:inherit}
+.wrap{max-width:1060px;margin:0 auto;padding:0 18px}
+
+/* 匾額式 hero */
+.hero{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:stretch;padding:26px 0 6px}
+.plaque{background:var(--brick);color:#f8e7c2;border:3px solid var(--gold);outline:2px solid var(--brick);outline-offset:3px;padding:16px 10px;writing-mode:vertical-rl;font:900 40px/1.15 var(--serif);letter-spacing:.18em;margin:5px;display:flex;align-items:center;justify-content:center}
+.plaque small{font-size:15px;letter-spacing:.3em;margin-top:.8em;font-weight:600}
+.hero-text h1{font:900 clamp(26px,6.4vw,44px)/1.3 var(--serif);margin:0}
+.hero-text .sub{font-family:var(--serif);color:var(--brick);font-weight:700;margin:6px 0 10px;letter-spacing:.06em}
+.hero-text p{margin:0 0 8px;font-size:15px;max-width:34em}
+.facts{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:14px;color:var(--ink2);margin-top:8px}
+.facts b{color:var(--ink)}
+
+.navbar{position:sticky;top:0;z-index:5;background:var(--brick);color:#f8e7c2;margin-top:18px;box-shadow:0 2px 0 var(--gold)}
+#daynav{display:flex;gap:4px;align-items:center;max-width:1060px;margin:0 auto;padding:6px 18px;overflow-x:auto}
+.navchip{flex:none;text-decoration:none;padding:4px 12px;font-family:var(--serif);font-weight:700;display:flex;gap:6px;align-items:baseline;border-radius:3px}
+.navchip:hover{background:var(--brick-d)}
+.navchip b{color:#ffd88a}
+.mini{margin-left:auto;font-size:14px;white-space:nowrap;padding-left:10px}
+.mini a{text-decoration:none}
+.mini b,#mini-total{font-weight:700;color:#ffd88a}
+
+.layout{display:block}
+.day{padding:30px 0 16px;border-bottom:2px solid var(--rule)}
+.day-head{display:flex;gap:14px;align-items:flex-start}
+.day-no{flex:none;width:52px;height:52px;border:2px solid var(--brick);color:var(--brick);display:grid;place-items:center;font:900 24px var(--serif);transform:rotate(-4deg);background:rgba(255,255,255,.35)}
+.day-date{margin:0;font-size:13px;color:var(--ink2);letter-spacing:.1em}
+.day h2{margin:0;font:900 25px/1.35 var(--serif)}
+.day-lede{margin:4px 0 0;color:var(--ink2);font-size:15px}
+.opts{border:0;padding:0;margin:18px 0 0;display:grid;gap:10px}
+.opts legend{font:700 14px var(--serif);color:var(--brick);margin-bottom:6px;padding:0;letter-spacing:.1em}
+.opt{position:relative;display:flex;gap:12px;align-items:flex-start;padding:12px 44px 12px 12px;background:#fbf4e6;border:1px solid var(--rule);border-left:5px solid var(--rule);cursor:pointer}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt-mark{flex:none;width:34px;height:34px;display:grid;place-items:center;font:900 18px var(--serif);color:var(--brick);border:1.5px solid var(--brick);border-radius:50%}
+.opt-body{display:grid;gap:1px;flex:1}
+.opt-name{font:800 17px/1.4 var(--serif)}
+.opt-desc{font-size:14px;color:var(--ink2)}
+.opt-cost{font-size:13px;color:var(--teal);font-weight:700}
+.opt:has(input:checked){border-color:var(--brick);border-left-color:var(--brick);background:#fff8ea}
+.opt:has(input:checked) .opt-mark{background:var(--brick);color:#f8e7c2}
+.opt:has(input:checked)::after{content:"已選";position:absolute;right:10px;top:10px;font:900 13px/1 var(--serif);color:var(--brick);border:2px solid var(--brick);padding:5px 4px;writing-mode:vertical-rl;transform:rotate(8deg);opacity:.85;border-radius:3px}
+.opt:has(input:focus-visible){outline:3px solid var(--gold);outline-offset:2px}
+.is-rain .opts{opacity:.5}
+.rain{display:flex;align-items:center;gap:12px;margin:12px 0 0;padding:10px 14px;background:rgba(47,107,99,.1);border:1px dashed var(--teal);cursor:pointer}
+.rain input{position:absolute;opacity:0}
+.rain-sw{flex:none;width:44px;height:26px;border-radius:13px;background:#bfb19a;position:relative}
+.rain-sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .15s}
+.rain input:checked + .rain-sw{background:var(--teal)}
+.rain input:checked + .rain-sw::after{left:21px}
+.rain input:focus-visible + .rain-sw{outline:3px solid var(--gold);outline-offset:2px}
+.rain-txt{font-weight:700;font-size:15px;display:grid}
+.rain-txt small{font-weight:400;color:var(--ink2);font-size:13px}
+.plan-title{margin:22px 0 4px;font:800 16px var(--serif)}
+.tag-rain{display:inline-block;background:var(--teal);color:#fff;font:700 12px var(--sans);padding:1px 8px;margin-right:8px;vertical-align:2px}
+.tag-rain.sm{font-size:11px;padding:0 5px}
+.stops{list-style:none;margin:0;padding:0}
+.stop{display:flex;gap:12px;padding:12px 0;border-bottom:1px dotted var(--rule)}
+.stop:last-child{border-bottom:0}
+.stop-dot{flex:none;width:26px;height:26px;background:var(--ink);color:var(--paper);display:grid;place-items:center;font:700 13px var(--serif);margin-top:3px}
+.stop-main{flex:1;min-width:0}
+.stop-top{margin:0;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.stop-top time{font-size:14px;color:var(--brick);font-weight:700;font-variant-numeric:tabular-nums}
+.stop-name{font:800 18px var(--serif)}
+.stop-note{margin:1px 0 0;font-size:14px;color:var(--ink2)}
+.stop-meta{margin:5px 0 0;display:flex;gap:12px;align-items:center}
+.map{font-size:13px;font-weight:700;text-decoration:none;color:var(--brick);border-bottom:1.5px solid var(--brick)}
+.map::after{content:" →"}
+.stop-cost{font-size:13px;color:var(--teal);font-weight:700}
+.stop-cost.free{color:var(--ink2);font-weight:400}
+
+.budget{padding:34px 0 20px}
+.budget h2{font:900 25px var(--serif);margin:0 0 2px}
+.budget p{margin:0 0 12px;color:var(--ink2);font-size:14px}
+.ledger{background:#fbf4e6;border:2px solid var(--ink);overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:420px}
+th,td{padding:9px 10px;border-bottom:1px solid var(--rule);border-right:1px solid var(--rule);text-align:left;vertical-align:top}
+th:last-child,td:last-child{border-right:0}
+thead th{font-family:var(--serif);background:var(--paper2);font-weight:800;white-space:nowrap;border-bottom:2px solid var(--ink)}
+tbody th{font-family:var(--serif);white-space:nowrap}
+.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sub{font-weight:700}
+tr.fixed td,tr.fixed th{background:rgba(192,138,45,.08)}
+tfoot th,tfoot td{font:900 18px var(--serif);border-top:2px solid var(--ink);border-bottom:0;color:var(--brick)}
+.foot{padding-top:20px;padding-bottom:60px;font-size:13px;color:var(--ink2)}
+.foot button{font:700 14px var(--sans);padding:8px 14px;border:1.5px solid var(--brick);color:var(--brick);background:transparent;cursor:pointer}
+
+@media (min-width:900px){
+  .hero{padding-top:44px;gap:30px}
+  .plaque{font-size:54px;padding:22px 14px}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:44px;align-items:start}
+  .budget{position:sticky;top:64px}
+  table{min-width:0;font-size:13px}
+  .opts{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+}
+
+th.plan-cell{white-space:normal;font-weight:400;min-width:9em}
+th.plan-cell b{display:block;font-weight:800}
+th.plan-cell .pn{display:block;font-size:.92em;line-height:1.45}
+
+.navin{display:flex;align-items:center;max-width:1080px;margin:0 auto}
+#daynav{flex:1;min-width:0;margin:0 !important}
+.mini{flex:none;margin-left:0 !important;padding:0 18px 0 8px !important}
+@media (max-width:480px){.navchip span{display:none}}
+table{min-width:0 !important}
+.detail{display:none}
+.pn-break{display:block;font-size:12px;opacity:.75;margin-top:2px}
+@media (min-width:601px) and (max-width:899px){.detail{display:table-cell}.pn-break{display:none}}
+
+.stop-meta{flex-wrap:wrap;row-gap:4px}
+.est{font-size:11px;line-height:1.6;color:var(--ink2);border:1px dashed currentColor;border-radius:4px;padding:0 5px;white-space:nowrap}
+.src{font-size:11px;color:var(--ink2);white-space:nowrap;margin-left:4px}
+.pn .est{display:inline-block;margin-top:2px}
+.sample-foot{text-align:center;font-size:12px;letter-spacing:.2em;color:var(--ink2);padding:14px 18px 28px;border-top:1px solid var(--rule)}
+.foot{padding-bottom:28px}
+@media (min-width:900px){
+  .opts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .opts .opt:last-of-type:nth-of-type(odd){grid-column:1/-1}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="plaque" aria-hidden="true">府城<small>兩日行</small></div>
+    <div class="hero-text">
+      <h1>台南兩天，<br>吃飽、走廟、看老街</h1>
+      <p class="sub">週末輕旅・高鐵往返</p>
+      <p>每天挑一條路線，挑好會記在這支手機上，關掉再開也不會不見。午後雷陣雨很常見，打開「改走雨備」就換成室內路線，下面的花費會跟著算。</p>
+      <div class="facts"><span><b>日期</b> 範例 11/14（六）– 11/15（日）</span><span><b>人數</b> 2 位</span><span><b>移動</b> 步行＋YouBike＋計程車</span></div>
+    </div>
+  </header>
+</div>
+<nav class="navbar" aria-label="日期"><div class="navin"><div id="daynav"></div><span class="mini"><a href="#budget-sec">每人約 <span id="mini-total">—</span></a></span></div></nav>
+<div class="wrap layout">
+  <main id="days"></main>
+  <aside class="budget" id="budget-sec">
+    <h2>花費帳本</h2>
+    <p>每人估算。門票、短程交通依路線加總；餐費抓小吃為主的量。</p>
+    <div class="ledger">
+      <table id="budget">
+        <thead><tr><th>日／路線</th><th class="num detail">門票交通</th><th class="num detail">吃</th><th class="num">小計</th></tr></thead>
+        <tbody></tbody>
+        <tfoot><tr><th>每人合計</th><td class="detail"></td><td class="detail"></td><td class="num" id="total" data-testid="total">—</td></tr></tfoot>
+      </table>
+    </div>
+  </aside>
+</div>
+<div class="wrap foot">
+  <p>有「官網」連結的門票與開放日已對照官網（2026/10 查）；標「估算／以官方為準」的是估算，餐費、計程車也都是估算。古蹟偶爾會整修或調價，以文化局與各館公告為準。很多小吃週一或固定日公休，出門前再查一下。</p>
+  <button id="reset" type="button">清除我的選擇</button>
+</div>
+<footer class="sample-foot" data-testid="sample-foot">範例作品</footer>
+<script>
+window.TRIP = {
+  key:'trip-tainan-2day-v1', currency:'TWD',
+  marks:['甲','乙','丙'],
+  text:{choose:'這天走哪一條', rain:'下雨了，改走雨備', rainTag:'雨備', map:'在地圖上看', free:'免門票', est:'估算／以官方為準', src:'官網', costLabel:'門票交通約', fixed:'固定', ticketCol:'門票交通', mealCol:'吃'},
+  fixed:[
+    {label:'高鐵 台北—台南 來回（標準車廂全票）', amount:2700, v:'https://www.thsrc.com.tw/ArticleContent/743c51ac-124d-4b1a-a57b-1fd820848032'},
+    {label:'住宿 1 晚（雙人房，每人分攤）', amount:1600, est:1},
+    {label:'高鐵台南站—市區 接駁來回（H31 持當日高鐵票免費；沙崙線台鐵單程約 25 元）', amount:50, est:1}
+  ],
+  days:[
+    {id:'d1', short:'第一日', badge:'壹', navTitle:'中西區', date:'週六', title:'中西區：廟、老屋、一路吃', lede:'市區景點彼此都近，大部分用走的就到。', meals:700,
+     options:[
+      {id:'a', name:'赤崁樓、武廟、神農街', desc:'第一次來台南的標準路線', stops:[
+        {time:'09:00', name:'阿堂鹹粥', q:'阿堂鹹粥 台南', note:'早上才有，賣完就收（營業時間以店家公告為準）', cost:0},
+        {time:'10:00', name:'赤崁樓', q:'赤崁樓', note:'全票 70，每日 08:30–21:30', cost:70, v:'https://historic.tainan.gov.tw/index.php?id=64&index=6&lang=cht&option=module&task=pageinfo'},
+        {time:'11:00', name:'祀典武廟', q:'祀典武廟', note:'對面就是大天后宮，可以一起看', cost:0},
+        {time:'11:40', name:'大天后宮', q:'大天后宮 台南', note:'', cost:0},
+        {time:'13:00', name:'國華街', q:'國華街 台南', note:'午餐邊走邊吃，人多要排', cost:0},
+        {time:'17:30', name:'神農街', q:'神農街', note:'傍晚亮燈後比較好拍', cost:150, est:1}
+      ]},
+      {id:'b', name:'孔廟、林百貨、藍晒圖', desc:'文青路線，咖啡店多', stops:[
+        {time:'09:30', name:'台南孔廟', q:'台南孔廟', note:'對面府中街有很多小店；全票 70（2026/1/30 起）', cost:70, v:'https://www.tn-confucius.org.tw/page.asp?mainid=EE2035E9-36E7-4CDC-939D-D8D47F486A44'},
+        {time:'11:00', name:'林百貨', q:'林百貨', note:'免費入館，11:00 開門；頂樓神社遺跡不一定開放', cost:0, v:'https://www.hayashi.com.tw/'},
+        {time:'13:00', name:'保安路小吃', q:'保安路 台南', note:'', cost:0},
+        {time:'15:30', name:'藍晒圖文創園區', q:'藍晒圖文創園區', note:'', cost:0},
+        {time:'18:00', name:'大東夜市', q:'大東夜市', note:'只有週一、二、五開，週六不會遇到，改去花園夜市（週四到週日）', cost:150, est:1}
+      ]},
+      {id:'c', name:'安平半日＋運河夕陽', desc:'城堡、樹屋、老街，傍晚看運河', stops:[
+        {time:'10:00', name:'安平古堡', q:'安平古堡', note:'全票 70', cost:70, v:'https://historic.tainan.gov.tw/index.php?id=60&index=4&lang=cht&option=module&task=pageinfo'},
+        {time:'11:30', name:'安平老街', q:'安平老街', note:'蝦餅、豆花、劍獅伴手禮', cost:0},
+        {time:'14:00', name:'安平樹屋', q:'安平樹屋', note:'跟德記洋行同一張票，全票 70', cost:70, v:'https://historic.tainan.gov.tw/index.php?id=60&index=4&lang=cht&option=module&task=pageinfo'},
+        {time:'17:00', name:'台南運河', q:'台南運河 安億橋', note:'', cost:200, est:1}
+      ]}
+     ],
+     rain:{name:'林百貨＋台灣文學館＋騎樓小吃', desc:'', stops:[
+        {time:'10:00', name:'國立台灣文學館', q:'國立台灣文學館', note:'日治時期台南州廳，免費；週一休館', cost:0, v:'https://www.nmtl.gov.tw/cp.aspx?n=3801'},
+        {time:'12:00', name:'林百貨', q:'林百貨', note:'11:00 開門', cost:0, v:'https://www.hayashi.com.tw/'},
+        {time:'14:00', name:'國華街・永樂市場', q:'永樂市場 台南', note:'市場有遮雨棚', cost:150, est:1}
+     ]}},
+    {id:'d2', short:'第二日', badge:'貳', navTitle:'出城或慢逛', date:'週日', title:'往外跑一點，傍晚搭高鐵', lede:'回程高鐵建議訂 18:00 以後，比較不趕。', meals:600,
+     options:[
+      {id:'a', name:'奇美博物館＋都會公園', desc:'整天室內外都有，帶長輩也輕鬆', stops:[
+        {time:'09:30', name:'奇美博物館', q:'奇美博物館', note:'週三休館（官網）；全票 200，其餘是計程車分攤', cost:450, est:1},
+        {time:'14:00', name:'台南都會公園', q:'台南都會公園', note:'博物館前那片就是', cost:0},
+        {time:'16:30', name:'高鐵台南站', q:'高鐵台南站', note:'', cost:200, est:1}
+      ]},
+      {id:'b', name:'四草綠色隧道＋七股鹽山', desc:'要包車或租車，自然風景', stops:[
+        {time:'09:00', name:'四草綠色隧道', q:'四草綠色隧道', note:'搭竹筏約 30 分鐘，每日 08:00–16:00（國家風景區官網）；船票為估算，帽子防曬必帶', cost:200, est:1},
+        {time:'11:30', name:'七股鹽山', q:'七股鹽山', note:'入園清潔費，行人 50', cost:50, v:'https://cigu.tybio.com.tw/webc/html/info/index.aspx'},
+        {time:'13:00', name:'七股海鮮午餐', q:'七股 海產', note:'', cost:0},
+        {time:'16:00', name:'高鐵台南站', q:'高鐵台南站', note:'包車一天分攤', cost:1200, est:1}
+      ]},
+      {id:'c', name:'正興街、水仙宮市場', desc:'睡飽再出門，慢慢逛', stops:[
+        {time:'10:00', name:'水仙宮市場', q:'水仙宮市場', note:'', cost:0},
+        {time:'11:30', name:'正興街', q:'正興街 台南', note:'', cost:0},
+        {time:'13:30', name:'海安路藝術街', q:'海安路 台南', note:'', cost:0},
+        {time:'16:00', name:'高鐵台南站', q:'高鐵台南站', note:'', cost:250, est:1}
+      ]}
+     ],
+     rain:{name:'奇美博物館待一整天', desc:'', stops:[
+        {time:'10:00', name:'奇美博物館', q:'奇美博物館', note:'館內有餐廳；週三休館；全票 200，其餘是計程車分攤', cost:450, est:1},
+        {time:'16:30', name:'高鐵台南站', q:'高鐵台南站', note:'', cost:200, est:1}
+     ]}}
+  ]
+};
+</script>
+<script>
+(function(){
+  var T = window.TRIP;
+  var KEY = T.key;
+  var fmt = function(n){ return Math.round(n).toLocaleString('zh-TW'); };
+  var state = { sel:{}, rain:{}, rate:T.rate || null };
+  try { var saved = JSON.parse(localStorage.getItem(KEY) || 'null'); if (saved) { state.sel = saved.sel||{}; state.rain = saved.rain||{}; if (saved.rate) state.rate = saved.rate; } } catch(e){}
+  T.days.forEach(function(d){ if(!d.options.some(function(o){return o.id===state.sel[d.id];})) state.sel[d.id] = d.options[0].id; if(typeof state.rain[d.id] !== 'boolean') state.rain[d.id] = false; });
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+  function mapUrl(q){ return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q); }
+  function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function activePlan(d){ return state.rain[d.id] ? d.rain : d.options.filter(function(o){return o.id===state.sel[d.id];})[0]; }
+  function planCost(p){ return p.stops.reduce(function(s,x){ return s + (x.cost||0); },0); }
+  var EST = T.text.est || '估算／以官方為準';
+  function flag(x){ return x.est ? '<span class="est">'+esc(EST)+'</span>' : (x.v ? '<a class="src" target="_blank" rel="noopener" href="'+esc(x.v)+'">'+esc(T.text.src||'官網')+'</a>' : ''); }
+  function money(n){ return T.currency==='JPY' ? '¥' + fmt(n) : 'NT$' + fmt(n); }
+
+  var daysEl = document.getElementById('days');
+  var nav = document.getElementById('daynav');
+  T.days.forEach(function(d, i){
+    var a = document.createElement('a'); a.href = '#' + d.id; a.className='navchip'; a.style.setProperty('--c', d.color||'');
+    a.innerHTML = '<b>' + esc(d.short) + '</b><span>' + esc(d.navTitle) + '</span>'; nav.insertBefore(a, nav.querySelector('.mini'));
+    var sec = document.createElement('section'); sec.className='day'; sec.id=d.id; sec.style.setProperty('--c', d.color||'');
+    var opts = d.options.map(function(o, j){
+      return '<label class="opt" data-testid="opt-'+d.id+'-'+o.id+'"><input type="radio" name="sel-'+d.id+'" value="'+o.id+'">' +
+        '<span class="opt-mark">'+esc(T.marks[j])+'</span><span class="opt-body"><span class="opt-name">'+esc(o.name)+'</span>' +
+        '<span class="opt-desc">'+esc(o.desc)+'</span><span class="opt-cost" data-cost></span></span></label>';
+    }).join('');
+    sec.innerHTML =
+      '<header class="day-head"><div class="day-no">'+esc(d.badge)+'</div><div><p class="day-date">'+esc(d.date)+'</p><h2>'+esc(d.title)+'</h2><p class="day-lede">'+esc(d.lede)+'</p></div></header>' +
+      '<fieldset class="opts"><legend>'+esc(T.text.choose)+'</legend>'+opts+'</fieldset>' +
+      '<label class="rain" data-testid="rain-'+d.id+'"><input type="checkbox"><span class="rain-sw" aria-hidden="true"></span><span class="rain-txt">'+esc(T.text.rain)+'<small>'+esc(d.rain.name)+'</small></span></label>' +
+      '<div class="plan" aria-live="polite"></div>';
+    daysEl.appendChild(sec);
+    d.options.forEach(function(o){
+      var lab = sec.querySelector('[data-testid="opt-'+d.id+'-'+o.id+'"]');
+      lab.querySelector('[data-cost]').textContent = T.text.costLabel + ' ' + money(planCost(o));
+      var r = lab.querySelector('input'); r.checked = state.sel[d.id]===o.id;
+      r.addEventListener('change', function(){ state.sel[d.id]=o.id; if(state.rain[d.id]){ state.rain[d.id]=false; sec.querySelector('.rain input').checked=false; } save(); renderDay(d); renderBudget(); });
+    });
+    var rc = sec.querySelector('.rain input'); rc.checked = state.rain[d.id];
+    rc.addEventListener('change', function(){ state.rain[d.id]=rc.checked; save(); renderDay(d); renderBudget(); });
+    renderDay(d);
+  });
+
+  function renderDay(d){
+    var sec = document.getElementById(d.id); var p = activePlan(d);
+    sec.classList.toggle('is-rain', !!state.rain[d.id]);
+    sec.querySelector('.plan').innerHTML =
+      '<p class="plan-title">' + (state.rain[d.id] ? '<span class="tag-rain">'+esc(T.text.rainTag)+'</span>' : '') + esc(p.name) + '</p>' +
+      '<ol class="stops">' + p.stops.map(function(s, k){
+        return '<li class="stop"><span class="stop-dot">'+(k+1)+'</span><div class="stop-main"><p class="stop-top"><time>'+esc(s.time)+'</time><span class="stop-name">'+esc(s.name)+'</span></p>' +
+          (s.note?'<p class="stop-note">'+esc(s.note)+'</p>':'') +
+          '<p class="stop-meta"><a class="map" target="_blank" rel="noopener" href="'+mapUrl(s.q)+'">'+esc(T.text.map)+'</a>' +
+          (s.cost?'<span class="stop-cost">'+money(s.cost)+'</span>':'<span class="stop-cost free">'+esc(T.text.free)+'</span>') + flag(s) + '</p></div></li>';
+      }).join('') + '</ol>';
+  }
+
+  var rateIn = document.getElementById('rate');
+  if (rateIn){ rateIn.value = state.rate; rateIn.addEventListener('input', function(){ var v = parseFloat(rateIn.value); if (v>0 && v<5){ state.rate=v; save(); renderBudget(); } }); }
+
+  function renderBudget(){
+    var tb = document.querySelector('#budget tbody'); var rows=[]; var total=0;
+    var two = T.currency==='JPY';
+    var conv = function(n){ return two ? '<td class="num twd">NT$'+fmt(n*state.rate)+'</td>' : ''; };
+    T.days.forEach(function(d){
+      var p = activePlan(d); var c = planCost(p) + d.meals; total += c;
+      rows.push('<tr data-testid="row-'+d.id+'"><th scope="row" class="plan-cell"><b>'+esc(d.short)+'</b><span class="pn">'+(state.rain[d.id]?'<span class="tag-rain sm">'+esc(T.text.rainTag)+'</span>':'')+esc(p.name)+'</span><span class="pn-break">'+esc(T.text.ticketCol)+' '+money(planCost(p))+'＋'+esc(T.text.mealCol)+' '+money(d.meals)+'</span></th><td class="num detail">'+money(planCost(p))+'</td><td class="num detail">'+money(d.meals)+'</td><td class="num sub">'+money(c)+'</td>'+conv(c)+'</tr>');
+    });
+    T.fixed.forEach(function(f){ total += f.amount; rows.push('<tr class="fixed"><th scope="row" class="plan-cell"><b>'+esc(T.text.fixed)+'</b><span class="pn">'+esc(f.label)+flag(f)+'</span></th><td class="detail"></td><td class="detail"></td><td class="num sub">'+money(f.amount)+'</td>'+conv(f.amount)+'</tr>'); });
+    tb.innerHTML = rows.join('');
+    document.getElementById('total').textContent = money(total);
+    var tt = document.getElementById('total-twd'); if (tt) tt.textContent = 'NT$' + fmt(total*state.rate);
+    var mini = document.getElementById('mini-total'); if (mini) mini.textContent = two ? ('NT$' + fmt(total*state.rate)) : money(total);
+  }
+  renderBudget();
+  document.getElementById('reset').addEventListener('click', function(){ localStorage.removeItem(KEY); location.reload(); });
+})();
+
+</script>
+</body>
+</html>

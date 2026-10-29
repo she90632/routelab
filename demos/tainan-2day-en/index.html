@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tainan in 2 Days | Pick-Your-Own Itinerary (Sample)</title>
+<style>
+:root{
+  --paper:#f3e9d6; --paper2:#ebdcc2; --ink:#2a1c14; --ink2:#6a5444; --brick:#9b2c22; --brick-d:#7a1f18; --gold:#c08a2d; --rule:#d2bd9a; --teal:#2f6b63;
+  --serif:"Noto Serif CJK TC","Noto Serif TC","Songti TC","PMingLiU",serif;
+  --sans:"Noto Sans CJK TC","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:60px}
+body{margin:0;color:var(--ink);font:16px/1.75 var(--sans);background:var(--paper);
+  background-image:radial-gradient(rgba(120,80,40,.07) 1px,transparent 1px);background-size:5px 5px}
+a{color:inherit}
+.wrap{max-width:1060px;margin:0 auto;padding:0 18px}
+
+/* plaque hero */
+.hero{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:stretch;padding:26px 0 6px}
+.plaque{background:var(--brick);color:#f8e7c2;border:3px solid var(--gold);outline:2px solid var(--brick);outline-offset:3px;padding:16px 10px;writing-mode:vertical-rl;font:900 40px/1.15 var(--serif);letter-spacing:.18em;margin:5px;display:flex;align-items:center;justify-content:center}
+.plaque small{font-size:15px;letter-spacing:.3em;margin-top:.8em;font-weight:600}
+.hero-text h1{font:900 clamp(26px,6.4vw,44px)/1.3 var(--serif);margin:0}
+.hero-text .sub{font-family:var(--serif);color:var(--brick);font-weight:700;margin:6px 0 10px;letter-spacing:.06em}
+.hero-text p{margin:0 0 8px;font-size:15px;max-width:34em}
+.facts{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:14px;color:var(--ink2);margin-top:8px}
+.facts b{color:var(--ink)}
+
+.navbar{position:sticky;top:0;z-index:5;background:var(--brick);color:#f8e7c2;margin-top:18px;box-shadow:0 2px 0 var(--gold)}
+#daynav{display:flex;gap:4px;align-items:center;max-width:1060px;margin:0 auto;padding:6px 18px;overflow-x:auto}
+.navchip{flex:none;text-decoration:none;padding:4px 12px;font-family:var(--serif);font-weight:700;display:flex;gap:6px;align-items:baseline;border-radius:3px}
+.navchip:hover{background:var(--brick-d)}
+.navchip b{color:#ffd88a}
+.mini{margin-left:auto;font-size:14px;white-space:nowrap;padding-left:10px}
+.mini a{text-decoration:none}
+.mini b,#mini-total{font-weight:700;color:#ffd88a}
+
+.layout{display:block}
+.day{padding:30px 0 16px;border-bottom:2px solid var(--rule)}
+.day-head{display:flex;gap:14px;align-items:flex-start}
+.day-no{flex:none;width:52px;height:52px;border:2px solid var(--brick);color:var(--brick);display:grid;place-items:center;font:900 24px var(--serif);transform:rotate(-4deg);background:rgba(255,255,255,.35)}
+.day-date{margin:0;font-size:13px;color:var(--ink2);letter-spacing:.1em}
+.day h2{margin:0;font:900 25px/1.35 var(--serif)}
+.day-lede{margin:4px 0 0;color:var(--ink2);font-size:15px}
+.opts{border:0;padding:0;margin:18px 0 0;display:grid;gap:10px}
+.opts legend{font:700 14px var(--serif);color:var(--brick);margin-bottom:6px;padding:0;letter-spacing:.1em}
+.opt{position:relative;display:flex;gap:12px;align-items:flex-start;padding:12px 44px 12px 12px;background:#fbf4e6;border:1px solid var(--rule);border-left:5px solid var(--rule);cursor:pointer}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt-mark{flex:none;width:34px;height:34px;display:grid;place-items:center;font:900 18px var(--serif);color:var(--brick);border:1.5px solid var(--brick);border-radius:50%}
+.opt-body{display:grid;gap:1px;flex:1}
+.opt-name{font:800 17px/1.4 var(--serif)}
+.opt-desc{font-size:14px;color:var(--ink2)}
+.opt-cost{font-size:13px;color:var(--teal);font-weight:700}
+.opt:has(input:checked){border-color:var(--brick);border-left-color:var(--brick);background:#fff8ea}
+.opt:has(input:checked) .opt-mark{background:var(--brick);color:#f8e7c2}
+.opt:has(input:checked)::after{content:"PICKED";position:absolute;right:10px;top:10px;font:900 13px/1 var(--serif);color:var(--brick);border:2px solid var(--brick);padding:5px 4px;writing-mode:vertical-rl;transform:rotate(8deg);opacity:.85;border-radius:3px}
+.opt:has(input:focus-visible){outline:3px solid var(--gold);outline-offset:2px}
+.is-rain .opts{opacity:.5}
+.rain{display:flex;align-items:center;gap:12px;margin:12px 0 0;padding:10px 14px;background:rgba(47,107,99,.1);border:1px dashed var(--teal);cursor:pointer}
+.rain input{position:absolute;opacity:0}
+.rain-sw{flex:none;width:44px;height:26px;border-radius:13px;background:#bfb19a;position:relative}
+.rain-sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .15s}
+.rain input:checked + .rain-sw{background:var(--teal)}
+.rain input:checked + .rain-sw::after{left:21px}
+.rain input:focus-visible + .rain-sw{outline:3px solid var(--gold);outline-offset:2px}
+.rain-txt{font-weight:700;font-size:15px;display:grid}
+.rain-txt small{font-weight:400;color:var(--ink2);font-size:13px}
+.plan-title{margin:22px 0 4px;font:800 16px var(--serif)}
+.tag-rain{display:inline-block;background:var(--teal);color:#fff;font:700 12px var(--sans);padding:1px 8px;margin-right:8px;vertical-align:2px}
+.tag-rain.sm{font-size:11px;padding:0 5px}
+.stops{list-style:none;margin:0;padding:0}
+.stop{display:flex;gap:12px;padding:12px 0;border-bottom:1px dotted var(--rule)}
+.stop:last-child{border-bottom:0}
+.stop-dot{flex:none;width:26px;height:26px;background:var(--ink);color:var(--paper);display:grid;place-items:center;font:700 13px var(--serif);margin-top:3px}
+.stop-main{flex:1;min-width:0}
+.stop-top{margin:0;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.stop-top time{font-size:14px;color:var(--brick);font-weight:700;font-variant-numeric:tabular-nums}
+.stop-name{font:800 18px var(--serif)}
+.stop-note{margin:1px 0 0;font-size:14px;color:var(--ink2)}
+.stop-meta{margin:5px 0 0;display:flex;gap:12px;align-items:center}
+.map{font-size:13px;font-weight:700;text-decoration:none;color:var(--brick);border-bottom:1.5px solid var(--brick)}
+.map::after{content:" →"}
+.stop-cost{font-size:13px;color:var(--teal);font-weight:700}
+.stop-cost.free{color:var(--ink2);font-weight:400}
+
+.budget{padding:34px 0 20px}
+.budget h2{font:900 25px var(--serif);margin:0 0 2px}
+.budget p{margin:0 0 12px;color:var(--ink2);font-size:14px}
+.ledger{background:#fbf4e6;border:2px solid var(--ink);overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:420px}
+th,td{padding:9px 10px;border-bottom:1px solid var(--rule);border-right:1px solid var(--rule);text-align:left;vertical-align:top}
+th:last-child,td:last-child{border-right:0}
+thead th{font-family:var(--serif);background:var(--paper2);font-weight:800;white-space:nowrap;border-bottom:2px solid var(--ink)}
+tbody th{font-family:var(--serif);white-space:nowrap}
+.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sub{font-weight:700}
+tr.fixed td,tr.fixed th{background:rgba(192,138,45,.08)}
+tfoot th,tfoot td{font:900 18px var(--serif);border-top:2px solid var(--ink);border-bottom:0;color:var(--brick)}
+.foot{padding-top:20px;padding-bottom:60px;font-size:13px;color:var(--ink2)}
+.foot button{font:700 14px var(--sans);padding:8px 14px;border:1.5px solid var(--brick);color:var(--brick);background:transparent;cursor:pointer}
+
+@media (min-width:900px){
+  .hero{padding-top:44px;gap:30px}
+  .plaque{font-size:54px;padding:22px 14px}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:44px;align-items:start}
+  .budget{position:sticky;top:64px}
+  table{min-width:0;font-size:13px}
+  .opts{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+}
+
+th.plan-cell{white-space:normal;font-weight:400;min-width:9em}
+th.plan-cell b{display:block;font-weight:800}
+th.plan-cell .pn{display:block;font-size:.92em;line-height:1.45}
+
+.navin{display:flex;align-items:center;max-width:1080px;margin:0 auto}
+#daynav{flex:1;min-width:0;margin:0 !important}
+.mini{flex:none;margin-left:0 !important;padding:0 18px 0 8px !important}
+@media (max-width:480px){.navchip span{display:none}}
+table{min-width:0 !important}
+.detail{display:none}
+.pn-break{display:block;font-size:12px;opacity:.75;margin-top:2px}
+@media (min-width:601px) and (max-width:899px){.detail{display:table-cell}.pn-break{display:none}}
+
+.stop-meta{flex-wrap:wrap;row-gap:4px}
+.est{font-size:11px;line-height:1.6;color:var(--ink2);border:1px dashed currentColor;border-radius:4px;padding:0 5px;white-space:nowrap}
+.src{font-size:11px;color:var(--ink2);white-space:nowrap;margin-left:4px}
+.pn .est{display:inline-block;margin-top:2px}
+.sample-foot{text-align:center;font-size:12px;letter-spacing:.2em;color:var(--ink2);padding:14px 18px 28px;border-top:1px solid var(--rule)}
+.foot{padding-bottom:28px}
+@media (min-width:900px){
+  .opts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .opts .opt:last-of-type:nth-of-type(odd){grid-column:1/-1}
+}
+/* English version: Latin punctuation (CJK fonts draw quotes/dashes full-width) */
+@font-face{font-family:"EnPunct";src:local("Noto Sans"),local("Noto Sans Regular"),local("NotoSans-Regular"),local("Helvetica Neue"),local("Segoe UI"),local("Arial"),local("Liberation Sans");unicode-range:U+2018-201D,U+00B7,U+2013-2014,U+2026}
+@font-face{font-family:"EnPunctSerif";src:local("Noto Serif"),local("Noto Serif Regular"),local("NotoSerif-Regular"),local("Georgia"),local("Times New Roman"),local("Liberation Serif"),local("DejaVu Serif");unicode-range:U+2018-201D,U+00B7,U+2013-2014,U+2026}
+:root{--sans:"EnPunct","Noto Sans CJK TC","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
+.pn .est{white-space:normal}
+:root{--serif:"EnPunctSerif","Noto Serif CJK TC","Noto Serif TC","Songti TC","PMingLiU",serif}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="plaque" aria-hidden="true">府城<small>TAINAN</small></div>
+    <div class="hero-text">
+      <h1>Two days in Tainan:<br>eat, temple-hop, wander old streets</h1>
+      <p class="sub">Weekend getaway · round trip by High Speed Rail</p>
+      <p>Pick one route for each day. Your picks are saved on this phone, so they're still there if you close the page and come back. Afternoon thunderstorms are common here — switch on “Raining? Switch to the rain plan” to get an indoor route, and the costs below update to match.</p>
+      <div class="facts"><span><b>Dates</b> Sample trip, Sat 11/14 – Sun 11/15</span><span><b>Group</b> 2 people</span><span><b>Getting around</b> Walking + YouBike + taxis</span></div>
+    </div>
+  </header>
+</div>
+<nav class="navbar" aria-label="Days"><div class="navin"><div id="daynav"></div><span class="mini"><a href="#budget-sec">Per person ≈ <span id="mini-total">—</span></a></span></div></nav>
+<div class="wrap layout">
+  <main id="days"></main>
+  <aside class="budget" id="budget-sec">
+    <h2>Spending ledger</h2>
+    <p>Per person, estimated. Tickets and short rides add up from the routes you pick; food assumes you're mostly eating street snacks.</p>
+    <div class="ledger">
+      <table id="budget">
+        <thead><tr><th>Day / route</th><th class="num detail">Tickets &amp; transit</th><th class="num detail">Food</th><th class="num">Subtotal</th></tr></thead>
+        <tbody></tbody>
+        <tfoot><tr><th>Total per person</th><td class="detail"></td><td class="detail"></td><td class="num" id="total" data-testid="total">—</td></tr></tfoot>
+      </table>
+    </div>
+  </aside>
+</div>
+<div class="wrap foot">
+  <p>Tickets and opening days with an “Official site” link were checked against the official websites (October 2026). Anything tagged “Estimate · check official site” is an estimate, and so are food and taxi costs. Historic sites sometimes close for repairs or change their prices, so go by the Cultural Affairs Bureau and each site's own notices. Many food stalls close on Mondays or on a fixed day each week — check before you head out.</p>
+  <button id="reset" type="button">Clear my picks</button>
+</div>
+<footer class="sample-foot" data-testid="sample-foot">SAMPLE WORK</footer>
+<script>
+window.TRIP = {
+  key:'trip-tainan-2day-en-v1', currency:'TWD',
+  marks:['A','B','C'],
+  text:{choose:'Which route today?', rain:'Raining? Switch to the rain plan', rainTag:'Rain plan', map:'View on map', free:'No ticket', est:'Estimate · check official site', src:'Official site', costLabel:'Tickets & transit ≈', fixed:'Fixed', ticketCol:'Tickets & transit', mealCol:'Food'},
+  fixed:[
+    {label:'THSR Taipei–Tainan round trip (standard car, adult fare)', amount:2700, v:'https://www.thsrc.com.tw/ArticleContent/743c51ac-124d-4b1a-a57b-1fd820848032'},
+    {label:'Hotel, 1 night (double room, per-person share)', amount:1600, est:1},
+    {label:'THSR Tainan Station ↔ city center, round trip (Bus H31 is free with a same-day THSR ticket; the Shalun Line train is about NT$25 each way)', amount:50, est:1}
+  ],
+  days:[
+    {id:'d1', short:'Day 1', badge:'1', navTitle:'West Central', date:'SATURDAY', title:'West Central District: temples, old houses, and snacks all the way', lede:'The sights in the old city are close together — you can walk to most of them.', meals:700,
+     options:[
+      {id:'a', name:'Chihkan Tower, Martial Temple, Shennong Street', desc:'The classic first-time-in-Tainan route', stops:[
+        {time:'09:00', name:'A-Tang Salty Congee', q:'阿堂鹹粥 台南', note:'Mornings only, and they close once it sells out (check the shop\'s own notices for hours)', cost:0},
+        {time:'10:00', name:'Chihkan Tower', q:'赤崁樓', note:'Adult ticket NT$70, open daily 08:30–21:30', cost:70, v:'https://historic.tainan.gov.tw/index.php?id=64&index=6&lang=cht&option=module&task=pageinfo'},
+        {time:'11:00', name:'Sacrificial Rites Martial Temple', q:'祀典武廟', note:'The Grand Mazu Temple is just across the way, so see them together', cost:0},
+        {time:'11:40', name:'Grand Mazu Temple', q:'大天后宮 台南', note:'', cost:0},
+        {time:'13:00', name:'Guohua Street', q:'國華街 台南', note:'Lunch as you walk; expect queues', cost:0},
+        {time:'17:30', name:'Shennong Street', q:'神農街', note:'Best for photos in the evening, once the lanterns come on', cost:150, est:1}
+      ]},
+      {id:'b', name:'Confucius Temple, Hayashi Department Store, Blueprint Park', desc:'The artsy route, with lots of cafés', stops:[
+        {time:'09:30', name:'Tainan Confucius Temple', q:'台南孔廟', note:'Plenty of little shops along Fuzhong Street across the road. Adult ticket NT$70 (from Jan 30, 2026)', cost:70, v:'https://www.tn-confucius.org.tw/page.asp?mainid=EE2035E9-36E7-4CDC-939D-D8D47F486A44'},
+        {time:'11:00', name:'Hayashi Department Store', q:'林百貨', note:'Free to enter, opens at 11:00; the rooftop shrine ruins aren\'t always open', cost:0, v:'https://www.hayashi.com.tw/'},
+        {time:'13:00', name:'Baoan Road street food', q:'保安路 台南', note:'', cost:0},
+        {time:'15:30', name:'Blueprint Culture & Creative Park', q:'藍晒圖文創園區', note:'', cost:0},
+        {time:'18:00', name:'Dadong Night Market', q:'大東夜市', note:'Only open Mondays, Tuesdays and Fridays, so you won\'t catch it on a Saturday — go to Garden Night Market (Thursday to Sunday) instead', cost:150, est:1}
+      ]},
+      {id:'c', name:'Half a day in Anping + canal sunset', desc:'A fort, a tree house, an old street, and the canal at dusk', stops:[
+        {time:'10:00', name:'Anping Old Fort', q:'安平古堡', note:'Adult ticket NT$70', cost:70, v:'https://historic.tainan.gov.tw/index.php?id=60&index=4&lang=cht&option=module&task=pageinfo'},
+        {time:'11:30', name:'Anping Old Street', q:'安平老街', note:'Shrimp crackers, douhua, and sword-lion souvenirs', cost:0},
+        {time:'14:00', name:'Anping Tree House', q:'安平樹屋', note:'One ticket covers this and Tait & Co. Merchant House, adult NT$70', cost:70, v:'https://historic.tainan.gov.tw/index.php?id=60&index=4&lang=cht&option=module&task=pageinfo'},
+        {time:'17:00', name:'Tainan Canal', q:'台南運河 安億橋', note:'', cost:200, est:1}
+      ]}
+     ],
+     rain:{name:'Hayashi + Museum of Taiwan Literature + covered-arcade snacks', desc:'', stops:[
+        {time:'10:00', name:'National Museum of Taiwan Literature', q:'國立台灣文學館', note:'Housed in the Japanese-era Tainan Prefecture Hall. Free; closed Mondays', cost:0, v:'https://www.nmtl.gov.tw/cp.aspx?n=3801'},
+        {time:'12:00', name:'Hayashi Department Store', q:'林百貨', note:'Opens at 11:00', cost:0, v:'https://www.hayashi.com.tw/'},
+        {time:'14:00', name:'Guohua Street & Yongle Market', q:'永樂市場 台南', note:'The market is covered', cost:150, est:1}
+     ]}},
+    {id:'d2', short:'Day 2', badge:'2', navTitle:'Day trip or slow day', date:'SUNDAY', title:'Venture a bit further, train home in the evening', lede:'Book your return THSR for 18:00 or later so you\'re not rushing.', meals:600,
+     options:[
+      {id:'a', name:'Chimei Museum + Metropolitan Park', desc:'Indoor and outdoor all day — easy going if you\'re traveling with parents or grandparents', stops:[
+        {time:'09:30', name:'Chimei Museum', q:'奇美博物館', note:'Closed Wednesdays (official site). Adult ticket NT$200; the rest is a shared taxi', cost:450, est:1},
+        {time:'14:00', name:'Tainan Metropolitan Park', q:'台南都會公園', note:'It\'s the park right in front of the museum', cost:0},
+        {time:'16:30', name:'THSR Tainan Station', q:'高鐵台南站', note:'', cost:200, est:1}
+      ]},
+      {id:'b', name:'Sicao Green Tunnel + Qigu Salt Mountain', desc:'Nature and wide-open views; you\'ll need a hired car or a rental', stops:[
+        {time:'09:00', name:'Sicao Green Tunnel', q:'四草綠色隧道', note:'About 30 minutes by bamboo raft, daily 08:00–16:00 (National Scenic Area website). The boat fare is an estimate. Bring a hat and sunscreen', cost:200, est:1},
+        {time:'11:30', name:'Qigu Salt Mountain', q:'七股鹽山', note:'Entry “cleaning fee” NT$50 per person on foot', cost:50, v:'https://cigu.tybio.com.tw/webc/html/info/index.aspx'},
+        {time:'13:00', name:'Seafood lunch in Qigu', q:'七股 海產', note:'', cost:0},
+        {time:'16:00', name:'THSR Tainan Station', q:'高鐵台南站', note:'Hired car for the day, split per person', cost:1200, est:1}
+      ]},
+      {id:'c', name:'Zhengxing Street & Shuixian Temple Market', desc:'Sleep in, then take your time', stops:[
+        {time:'10:00', name:'Shuixian Temple Market', q:'水仙宮市場', note:'', cost:0},
+        {time:'11:30', name:'Zhengxing Street', q:'正興街 台南', note:'', cost:0},
+        {time:'13:30', name:'Haian Road Art Street', q:'海安路 台南', note:'', cost:0},
+        {time:'16:00', name:'THSR Tainan Station', q:'高鐵台南站', note:'', cost:250, est:1}
+      ]}
+     ],
+     rain:{name:'A whole day at the Chimei Museum', desc:'', stops:[
+        {time:'10:00', name:'Chimei Museum', q:'奇美博物館', note:'Restaurants inside; closed Wednesdays. Adult ticket NT$200; the rest is a shared taxi', cost:450, est:1},
+        {time:'16:30', name:'THSR Tainan Station', q:'高鐵台南站', note:'', cost:200, est:1}
+     ]}}
+  ]
+};
+</script>
+<script>
+(function(){
+  var T = window.TRIP;
+  var KEY = T.key;
+  var fmt = function(n){ return Math.round(n).toLocaleString('en-US'); };
+  var state = { sel:{}, rain:{}, rate:T.rate || null };
+  try { var saved = JSON.parse(localStorage.getItem(KEY) || 'null'); if (saved) { state.sel = saved.sel||{}; state.rain = saved.rain||{}; if (saved.rate) state.rate = saved.rate; } } catch(e){}
+  T.days.forEach(function(d){ if(!d.options.some(function(o){return o.id===state.sel[d.id];})) state.sel[d.id] = d.options[0].id; if(typeof state.rain[d.id] !== 'boolean') state.rain[d.id] = false; });
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+  function mapUrl(q){ return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q); }
+  function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function activePlan(d){ return state.rain[d.id] ? d.rain : d.options.filter(function(o){return o.id===state.sel[d.id];})[0]; }
+  function planCost(p){ return p.stops.reduce(function(s,x){ return s + (x.cost||0); },0); }
+  var EST = T.text.est || 'Estimate · check official site';
+  function flag(x){ return x.est ? '<span class="est">'+esc(EST)+'</span>' : (x.v ? '<a class="src" target="_blank" rel="noopener" href="'+esc(x.v)+'">'+esc(T.text.src||'Official site')+'</a>' : ''); }
+  function money(n){ return T.currency==='JPY' ? '¥' + fmt(n) : 'NT$' + fmt(n); }
+
+  var daysEl = document.getElementById('days');
+  var nav = document.getElementById('daynav');
+  T.days.forEach(function(d, i){
+    var a = document.createElement('a'); a.href = '#' + d.id; a.className='navchip'; a.style.setProperty('--c', d.color||'');
+    a.innerHTML = '<b>' + esc(d.short) + '</b><span>' + esc(d.navTitle) + '</span>'; nav.insertBefore(a, nav.querySelector('.mini'));
+    var sec = document.createElement('section'); sec.className='day'; sec.id=d.id; sec.style.setProperty('--c', d.color||'');
+    var opts = d.options.map(function(o, j){
+      return '<label class="opt" data-testid="opt-'+d.id+'-'+o.id+'"><input type="radio" name="sel-'+d.id+'" value="'+o.id+'">' +
+        '<span class="opt-mark">'+esc(T.marks[j])+'</span><span class="opt-body"><span class="opt-name">'+esc(o.name)+'</span>' +
+        '<span class="opt-desc">'+esc(o.desc)+'</span><span class="opt-cost" data-cost></span></span></label>';
+    }).join('');
+    sec.innerHTML =
+      '<header class="day-head"><div class="day-no">'+esc(d.badge)+'</div><div><p class="day-date">'+esc(d.date)+'</p><h2>'+esc(d.title)+'</h2><p class="day-lede">'+esc(d.lede)+'</p></div></header>' +
+      '<fieldset class="opts"><legend>'+esc(T.text.choose)+'</legend>'+opts+'</fieldset>' +
+      '<label class="rain" data-testid="rain-'+d.id+'"><input type="checkbox"><span class="rain-sw" aria-hidden="true"></span><span class="rain-txt">'+esc(T.text.rain)+'<small>'+esc(d.rain.name)+'</small></span></label>' +
+      '<div class="plan" aria-live="polite"></div>';
+    daysEl.appendChild(sec);
+    d.options.forEach(function(o){
+      var lab = sec.querySelector('[data-testid="opt-'+d.id+'-'+o.id+'"]');
+      lab.querySelector('[data-cost]').textContent = T.text.costLabel + ' ' + money(planCost(o));
+      var r = lab.querySelector('input'); r.checked = state.sel[d.id]===o.id;
+      r.addEventListener('change', function(){ state.sel[d.id]=o.id; if(state.rain[d.id]){ state.rain[d.id]=false; sec.querySelector('.rain input').checked=false; } save(); renderDay(d); renderBudget(); });
+    });
+    var rc = sec.querySelector('.rain input'); rc.checked = state.rain[d.id];
+    rc.addEventListener('change', function(){ state.rain[d.id]=rc.checked; save(); renderDay(d); renderBudget(); });
+    renderDay(d);
+  });
+
+  function renderDay(d){
+    var sec = document.getElementById(d.id); var p = activePlan(d);
+    sec.classList.toggle('is-rain', !!state.rain[d.id]);
+    sec.querySelector('.plan').innerHTML =
+      '<p class="plan-title">' + (state.rain[d.id] ? '<span class="tag-rain">'+esc(T.text.rainTag)+'</span>' : '') + esc(p.name) + '</p>' +
+      '<ol class="stops">' + p.stops.map(function(s, k){
+        return '<li class="stop"><span class="stop-dot">'+(k+1)+'</span><div class="stop-main"><p class="stop-top"><time>'+esc(s.time)+'</time><span class="stop-name">'+esc(s.name)+'</span></p>' +
+          (s.note?'<p class="stop-note">'+esc(s.note)+'</p>':'') +
+          '<p class="stop-meta"><a class="map" target="_blank" rel="noopener" href="'+mapUrl(s.q)+'">'+esc(T.text.map)+'</a>' +
+          (s.cost?'<span class="stop-cost">'+money(s.cost)+'</span>':'<span class="stop-cost free">'+esc(T.text.free)+'</span>') + flag(s) + '</p></div></li>';
+      }).join('') + '</ol>';
+  }
+
+  var rateIn = document.getElementById('rate');
+  if (rateIn){ rateIn.value = state.rate; rateIn.addEventListener('input', function(){ var v = parseFloat(rateIn.value); if (v>0 && v<5){ state.rate=v; save(); renderBudget(); } }); }
+
+  function renderBudget(){
+    var tb = document.querySelector('#budget tbody'); var rows=[]; var total=0;
+    var two = T.currency==='JPY';
+    var conv = function(n){ return two ? '<td class="num twd">NT$'+fmt(n*state.rate)+'</td>' : ''; };
+    T.days.forEach(function(d){
+      var p = activePlan(d); var c = planCost(p) + d.meals; total += c;
+      rows.push('<tr data-testid="row-'+d.id+'"><th scope="row" class="plan-cell"><b>'+esc(d.short)+'</b><span class="pn">'+(state.rain[d.id]?'<span class="tag-rain sm">'+esc(T.text.rainTag)+'</span>':'')+esc(p.name)+'</span><span class="pn-break">'+esc(T.text.ticketCol)+' '+money(planCost(p))+' + '+esc(T.text.mealCol)+' '+money(d.meals)+'</span></th><td class="num detail">'+money(planCost(p))+'</td><td class="num detail">'+money(d.meals)+'</td><td class="num sub">'+money(c)+'</td>'+conv(c)+'</tr>');
+    });
+    T.fixed.forEach(function(f){ total += f.amount; rows.push('<tr class="fixed"><th scope="row" class="plan-cell"><b>'+esc(T.text.fixed)+'</b><span class="pn">'+esc(f.label)+flag(f)+'</span></th><td class="detail"></td><td class="detail"></td><td class="num sub">'+money(f.amount)+'</td>'+conv(f.amount)+'</tr>'); });
+    tb.innerHTML = rows.join('');
+    document.getElementById('total').textContent = money(total);
+    var tt = document.getElementById('total-twd'); if (tt) tt.textContent = 'NT$' + fmt(total*state.rate);
+    var mini = document.getElementById('mini-total'); if (mini) mini.textContent = two ? ('NT$' + fmt(total*state.rate)) : money(total);
+  }
+  renderBudget();
+  document.getElementById('reset').addEventListener('click', function(){ localStorage.removeItem(KEY); location.reload(); });
+})();
+
+</script>
+</body>
+</html>

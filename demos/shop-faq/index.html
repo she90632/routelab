@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>麥芽巷烘焙｜LINE 自動回覆＋訂單整理（本機示範）</title>
+<style>
+:root{
+  --sans:"Noto Sans CJK TC","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --line:#06c755; --chatbg:#8aa7cf; --me:#8de055; --ink:#202124; --ink2:#5f6368; --grid:#e2e3e3; --head:#f8f9fa; --sel:#1a73e8;
+  --crust:#7a4a21; --cream:#f7efe3;
+}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.6 var(--sans);color:var(--ink);background:var(--cream)}
+.top{max-width:1240px;margin:0 auto;padding:22px 18px 8px;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:flex-end;justify-content:space-between}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:46px;height:46px;border-radius:50%;background:var(--crust);color:var(--cream);display:grid;place-items:center;font-weight:900;font-size:20px}
+.brand h1{margin:0;font-size:22px;line-height:1.2}
+.brand p{margin:0;color:#6b5a48;font-size:13px}
+.demo-tag{font-size:12px;border:1px solid #6b5a48;color:#6b5a48;padding:2px 8px;border-radius:4px}
+.tabs{display:flex;gap:6px;max-width:1240px;margin:8px auto 0;padding:0 18px}
+.tabs button{flex:1;font:700 15px var(--sans);padding:9px;border:1.5px solid var(--crust);background:transparent;color:var(--crust);border-radius:8px;cursor:pointer}
+.tabs button[aria-selected=true]{background:var(--crust);color:var(--cream)}
+.stage{max-width:1240px;margin:0 auto;padding:12px 18px 20px;display:grid;gap:18px}
+.pane[hidden]{display:none}
+
+/* LINE 聊天 */
+.phone{background:var(--chatbg);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;height:min(78vh,720px);border:1px solid #6c86ab;box-shadow:0 8px 24px rgba(60,40,20,.15)}
+.chat-head{background:#fff;display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #ddd}
+.chat-head .back{font-size:20px;color:#333}
+.chat-head b{font-size:16px}
+.chat-head .who{margin-left:auto;font-size:12px;color:var(--ink2);display:flex;align-items:center;gap:6px}
+.chat-head select{font:13px var(--sans);padding:3px 4px;border:1px solid #ccc;border-radius:6px;background:#fff}
+.msgs{flex:1;overflow-y:auto;padding:14px 10px 8px;display:flex;flex-direction:column;gap:10px}
+.daymark{align-self:center;background:rgba(0,0,0,.18);color:#fff;font-size:12px;padding:1px 10px;border-radius:10px}
+.row{display:flex;gap:6px;align-items:flex-end;max-width:100%}
+.row.me{flex-direction:row-reverse}
+.av{flex:none;width:32px;height:32px;border-radius:50%;background:var(--crust);color:var(--cream);display:grid;place-items:center;font-size:13px;font-weight:900;align-self:flex-start}
+.bwrap{display:flex;flex-direction:column;max-width:76%}
+.row.me .bwrap{align-items:flex-end}
+.nick{font-size:11px;color:#fff;margin:0 0 2px 2px}
+.bubble{background:#fff;border-radius:16px;padding:8px 12px;white-space:pre-wrap;word-break:break-word;font-size:14.5px}
+.row.me .bubble{background:var(--me)}
+.meta{font-size:10.5px;color:#eef2f8;margin-top:2px}
+.auto{display:inline-block;font-size:10.5px;background:rgba(255,255,255,.85);color:#3a6b2b;border-radius:4px;padding:0 5px;margin-top:3px}
+.auto.human{color:#a3381d}
+.order-card{background:#fff;border-radius:14px;overflow:hidden;font-size:13.5px;min-width:220px}
+.order-card header{background:var(--crust);color:var(--cream);padding:6px 12px;font-weight:700}
+.order-card ul{margin:0;padding:8px 12px 4px;list-style:none}
+.order-card li{display:flex;justify-content:space-between;gap:16px}
+.order-card .sum{border-top:1px dashed #ccc;margin:4px 12px 0;padding:6px 0 8px;display:flex;justify-content:space-between;font-weight:700}
+.order-card .hint{background:#f4f4f4;padding:6px 12px;font-size:12.5px;color:#444}
+.quick{display:flex;gap:6px;overflow-x:auto;padding:6px 10px;scrollbar-width:none}
+.quick button{flex:none;font:13px var(--sans);background:#fff;border:1.5px solid var(--line);color:#118a3e;border-radius:16px;padding:4px 11px;cursor:pointer}
+.composer{display:flex;gap:8px;align-items:center;background:#fff;padding:8px 10px}
+.composer input{flex:1;min-width:0;font:15px var(--sans);border:0;background:#f2f3f5;border-radius:18px;padding:9px 14px}
+.composer input:focus{outline:2px solid var(--line)}
+.composer button{flex:none;font:700 14px var(--sans);background:var(--line);color:#fff;border:0;border-radius:18px;padding:8px 14px;cursor:pointer}
+
+/* Google 試算表樣式 */
+.sheet{background:#fff;border:1px solid #c7c7c7;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;min-height:420px;font-family:Arial,var(--sans)}
+.s-title{display:flex;align-items:center;gap:10px;padding:8px 12px 2px}
+.s-icon{width:22px;height:28px;background:#0f9d58;border-radius:2px;position:relative}
+.s-icon::after{content:"";position:absolute;inset:8px 5px 6px;border:1.5px solid #fff;border-width:1.5px 0;box-shadow:inset 0 5px 0 -3.5px #fff}
+.s-title b{font-size:16px;font-weight:400}
+.s-menu{display:flex;gap:12px;font-size:13px;color:#444;padding:0 12px 6px 44px;overflow-x:auto;white-space:nowrap}
+.s-tool{display:flex;gap:6px;align-items:center;background:#edf2fa;margin:0 8px;border-radius:20px;padding:4px 12px;font-size:12.5px;color:#444;overflow-x:auto;white-space:nowrap}
+.s-tool .sep{width:1px;height:16px;background:#c7c7c7}
+.s-tool button{font:12.5px Arial,var(--sans);border:0;background:transparent;padding:3px 7px;border-radius:4px;cursor:pointer}
+.s-tool button:hover{background:#dde3ea}
+.fx{display:flex;align-items:center;border-bottom:1px solid #c7c7c7;font-size:13px;margin-top:6px}
+.fx .ref{width:70px;padding:4px 8px;border-right:1px solid #c7c7c7;color:#444}
+.fx .f{padding:4px 8px;color:#777;font-style:italic}
+.fx .val{padding:4px 8px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.grid-wrap{flex:1;overflow:auto}
+.grid{border-collapse:collapse;font-size:13px;min-width:100%}
+.grid th,.grid td{border:1px solid var(--grid);padding:3px 7px;white-space:nowrap;height:25px}
+.grid thead th{background:var(--head);color:#444;font-weight:400;font-size:11.5px;text-align:center;position:sticky;top:0;z-index:1}
+.grid .rn{background:var(--head);color:#444;font-size:11.5px;text-align:center;width:38px;min-width:38px;position:sticky;left:0}
+.grid tr.hdr td{font-weight:700;background:#f1f6f2}
+.grid tr.group td{background:#fff8e1;font-weight:700;color:#5b4300}
+.grid td.n{text-align:right}
+.grid td.sel{outline:2px solid var(--sel);outline-offset:-2px}
+.grid tr.new td{animation:flash 1.6s ease-out}
+@keyframes flash{from{background:#d2e3fc}to{background:inherit}}
+.chip{display:inline-block;border-radius:10px;padding:0 9px;font-size:12px;cursor:pointer;border:0;font-family:inherit;line-height:20px}
+.chip::after{content:" ▾";font-size:9px}
+.st-pending{background:#fce8b2;color:#7a5200}
+.st-ok{background:#ceead6;color:#0d652d}
+.st-done{background:#e8eaed;color:#3c4043}
+.st-cancel{background:#fad2cf;color:#a50e0e}
+.s-tabs{display:flex;align-items:stretch;border-top:1px solid #c7c7c7;background:var(--head);font-size:13px;overflow-x:auto}
+.s-tabs .plus{padding:7px 12px;color:#666}
+.s-tabs button{flex:none;font:13px Arial,var(--sans);padding:7px 14px;border:0;background:transparent;color:#444;cursor:pointer;border-right:1px solid #e0e0e0}
+.s-tabs button[aria-selected=true]{background:#e1e9f7;color:#0b57d0;font-weight:700;box-shadow:inset 0 -3px 0 #0b57d0}
+.note{max-width:1240px;margin:0 auto;padding:0 18px 50px;display:grid;gap:12px}
+.note .box{background:#fffaf2;border:1px solid #d9c3a5;border-left:5px solid var(--crust);border-radius:6px;padding:12px 16px;font-size:14px}
+.note h2{font-size:15px;margin:0 0 4px}
+.note ol{margin:4px 0 0;padding-left:1.3em}
+.note button{justify-self:start;font:700 13px var(--sans);padding:7px 12px;border:1.5px solid var(--crust);background:transparent;color:var(--crust);border-radius:6px;cursor:pointer}
+@media (min-width:960px){
+  .tabs{display:none}
+  .stage{grid-template-columns:400px minmax(0,1fr);align-items:start}
+  .pane[hidden]{display:flex}
+  .sheet{height:720px}
+}
+.sample-foot{text-align:center;font-size:12px;letter-spacing:.2em;color:#6b5a48;padding:14px 18px 28px;max-width:1240px;margin:0 auto;border-top:1px solid #e0d2bf}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><div class="logo">麥</div><div><h1>麥芽巷烘焙</h1><p>虛構小店・LINE 官方帳號自動回覆與訂單整理</p></div></div>
+  <span class="demo-tag">本機示範，未連接任何帳號</span>
+</header>
+<div class="tabs" role="tablist">
+  <button role="tab" aria-selected="true" data-pane="chat" id="tab-chat">LINE 對話</button>
+  <button role="tab" aria-selected="false" data-pane="sheet" id="tab-sheet">訂單表 <span id="tab-count"></span></button>
+</div>
+<main class="stage">
+  <section class="pane phone" id="chat" aria-label="LINE 對話模擬">
+    <div class="chat-head"><span class="back">‹</span><b>麥芽巷烘焙</b>
+      <label class="who">以誰的身分傳
+        <select id="who" data-testid="who">
+          <option value="豆花">客人・豆花</option>
+          <option value="小熊">客人・小熊</option>
+          <option value="橘子">客人・橘子</option>
+        </select></label></div>
+    <div class="msgs" id="msgs" aria-live="polite"></div>
+    <div class="quick" id="quick"></div>
+    <form class="composer" id="composer"><input id="text" autocomplete="off" placeholder="輸入訊息，例如：11/8 肉桂捲 2 個 下午3點" data-testid="input"><button type="submit">傳送</button></form>
+  </section>
+  <section class="pane sheet" id="sheet" aria-label="訂單試算表模擬" hidden>
+    <div class="s-title"><span class="s-icon" aria-hidden="true"></span><b>麥芽巷｜LINE 預訂單 2026</b></div>
+    <div class="s-menu"><span>檔案</span><span>編輯</span><span>查看</span><span>插入</span><span>格式</span><span>資料</span><span>工具</span><span>擴充功能</span></div>
+    <div class="s-tool"><span>↶ ↷</span><span class="sep"></span><span>100%</span><span class="sep"></span><span>NT$</span><span class="sep"></span><span id="row-count">0 筆</span><span class="sep"></span><button id="export" type="button" title="下載目前分頁為 CSV">下載 CSV</button></div>
+    <div class="fx"><span class="ref" id="ref">A1</span><span class="f">fx</span><span class="val" id="fxval"></span></div>
+    <div class="grid-wrap"><table class="grid" id="grid" data-testid="grid"></table></div>
+    <div class="s-tabs" role="tablist" id="stabs">
+      <span class="plus">＋ ≡</span>
+      <button role="tab" data-view="date" aria-selected="true">依取貨日</button>
+      <button role="tab" data-view="status" aria-selected="false">依狀態</button>
+      <button role="tab" data-view="item" aria-selected="false">依品項</button>
+      <button role="tab" data-view="prep" aria-selected="false">備料統計</button>
+    </div>
+  </section>
+</main>
+<footer class="sample-foot" data-testid="sample-foot">範例作品</footer>
+<section class="note">
+  <div class="box">
+    <h2>這頁怎麼玩</h2>
+    <ol>
+      <li>點下面的快速按鈕問常見問題，或自己打字，例如「週一有開嗎」「有素食嗎」。</li>
+      <li>直接打訂單：「11/8 肉桂捲 2 個、可頌三個 下午3點拿」，會自動拆成品項、數量、取貨日時間，寫進右邊（手機版在「訂單表」分頁）。</li>
+      <li>客人回「確認」，狀態就從「待確認」變「已確認」；在表上點狀態可以改成「已取貨」或「已取消」。</li>
+      <li>右上角可以切換不同客人，看多筆訂單怎麼依日期、狀態、品項排好。</li>
+    </ol>
+  </div>
+  <div class="box">
+    <h2>正式版會怎麼接</h2>
+    正式上線時，對話這一側換成 <b>LINE Messaging API</b>：店家的官方帳號設定 webhook，客人傳訊息時由伺服器套用同一套關鍵字規則回覆，答不出來就轉給真人。訂單那一側用 <b>Google Sheets API</b> 寫進店家自己的試算表。這個示範沒有連任何帳號、沒有金鑰，所有對話和訂單只存在這個瀏覽器的 localStorage，清掉就沒了。
+  </div>
+  <button id="reset" type="button">清空示範資料</button>
+</section>
+<script>
+(function(){
+var KEY='shop-faq-demo-v1';
+var MENU=[
+  {name:'巴斯克乳酪蛋糕（6吋）', short:'巴斯克', alias:['巴斯克乳酪蛋糕','巴斯克蛋糕','巴斯克'], price:680},
+  {name:'肉桂捲', short:'肉桂捲', alias:['肉桂捲','肉桂卷'], price:75},
+  {name:'鹽奶油捲', short:'鹽奶油捲', alias:['鹽奶油捲','鹽可頌','鹽捲'], price:40},
+  {name:'原味可頌', short:'可頌', alias:['原味可頌','可頌','牛角'], price:55},
+  {name:'鄉村歐包', short:'歐包', alias:['鄉村歐包','歐包'], price:120},
+  {name:'菠蘿麵包', short:'菠蘿', alias:['菠蘿麵包','菠蘿'], price:35},
+  {name:'蛋黃酥', short:'蛋黃酥', alias:['蛋黃酥'], price:45}
+];
+var FAQ=[
+  {k:['營業','幾點開','幾點關','有開','公休','休息','開門'], a:'週二到週日 10:00–19:00，週一公休。\n麵包賣完會提早關門，當天會在主頁公告。'},
+  {k:['停車','車位','開車'], a:'店門口巷子不好停，建議停巷口的路邊格，走過來大約 2 分鐘。'},
+  {k:['素','蛋奶','全素'], a:'可頌、鹽奶油捲、菠蘿是蛋奶素；鄉村歐包是全素。\n肉桂捲、蛋黃酥、巴斯克都含蛋奶。'},
+  {k:['過敏','堅果','麩質','花生'], a:'所有麵包都含麩質，店內也有處理堅果。\n如果是嚴重過敏，建議先不要購買，抱歉。'},
+  {k:['保存','放多久','冷凍','回烤','加熱'], a:'麵包當天吃最好，隔天建議冷凍。\n要吃前不用退冰，烤箱 180 度烤 5–6 分鐘。巴斯克冷藏 3 天內吃完。'},
+  {k:['付款','刷卡','轉帳','line pay','linepay','現金'], a:'現場可以付現金或 LINE Pay。\n預訂金額超過 NT$1,000 要先轉帳訂金，確認後會給你帳號。'},
+  {k:['外送','宅配','寄送','運費','foodpanda','ubereats'], a:'目前沒有外送，都是來店自取。\n只有巴斯克可以冷凍宅配，每週三出貨。'},
+  {k:['地址','在哪','怎麼去','位置','地圖'], a:'這是示範用的虛構小店，沒有放實際地址。\n正式版這裡會直接回一個 Google 地圖連結。'},
+  {k:['生日','客製','寫字','插卡','大量','公司訂'], a:'這個要店長看過才能答應你，已經幫你轉給真人了，營業時間內會回覆。', human:true},
+  {k:['菜單','價格','多少錢','價目','有什麼','品項'], a:'__MENU__'},
+  {k:['怎麼訂','預訂','訂購','可以訂','想訂'], a:'直接傳「日期＋品項＋數量＋取貨時間」就好，例如：\n11/8 肉桂捲 2 個、可頌 3 個 下午3點\n我會整理好給你確認。'}
+];
+var QUICK=['營業時間？','有素食的嗎','可以宅配嗎','菜單價格','明天 可頌3個 肉桂捲2個 下午2點','確認','想訂生日蛋糕寫字'];
+var CN={'零':0,'〇':0,'一':1,'二':2,'兩':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9};
+function cnNum(s){ if(/^\d+$/.test(s)) return parseInt(s,10); var n=0; if(s.indexOf('十')>=0){ var p=s.split('十'); n=(p[0]?CN[p[0]]:1)*10+(p[1]?CN[p[1]]:0); } else n=CN[s]; return n; }
+function pad(n){return (n<10?'0':'')+n;}
+function ymd(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function mdw(s){ var d=new Date(s+'T00:00:00'); return (d.getMonth()+1)+'/'+d.getDate()+'（'+'日一二三四五六'[d.getDay()]+'）'; }
+function nowHM(){var d=new Date();return pad(d.getHours())+':'+pad(d.getMinutes());}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function norm(t){ return t.replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-65248);}).replace(/[：]/g,':').replace(/[／]/g,'/'); }
+
+function parseDate(t){
+  var today=new Date(); today.setHours(0,0,0,0); var m;
+  if((m=t.match(/(\d{1,2})\s*[\/月]\s*(\d{1,2})\s*[日號号]?/))){ var d=new Date(today.getFullYear(),+m[1]-1,+m[2]); if(d<today) d.setFullYear(d.getFullYear()+1); return {date:ymd(d), raw:m[0]}; }
+  if(/後天/.test(t)){ var d2=new Date(today); d2.setDate(d2.getDate()+2); return {date:ymd(d2), raw:'後天'}; }
+  if(/明天|明日/.test(t)){ var d1=new Date(today); d1.setDate(d1.getDate()+1); return {date:ymd(d1), raw:'明天'}; }
+  if(/今天|今日/.test(t)){ return {date:ymd(today), raw:'今天'}; }
+  if((m=t.match(/(下下?)?(週|周|星期|禮拜)([一二三四五六日天])/))){ var want='日一二三四五六'.indexOf(m[3]==='天'?'日':m[3]); var d3=new Date(today); var diff=(want-d3.getDay()+7)%7; if(diff===0) diff=7; if(m[1]==='下下') diff+=7; else if(m[1]==='下' && diff<7 && (d3.getDay()===0 || want>d3.getDay())) diff+=7; d3.setDate(d3.getDate()+diff); return {date:ymd(d3), raw:m[0]}; }
+  return null;
+}
+function parseTime(t){
+  var m=t.match(/(早上|上午|中午|下午|傍晚|晚上)?\s*(\d{1,2}|[一二兩三四五六七八九十]{1,3})\s*(?:點|:|：)\s*(半|\d{2})?/);
+  if(!m) return null; var h=cnNum(m[2]); if(h==null||isNaN(h)) return null; var mm=m[3]==='半'?30:(m[3]?+m[3]:0);
+  if((m[1]==='下午'||m[1]==='傍晚'||m[1]==='晚上') && h<12) h+=12; if(m[1]==='中午' && h<6) h+=12;
+  if(!m[1] && h>=1 && h<=7) h+=12;
+  if(h>23||mm>59) return null; return {time:pad(h)+':'+pad(mm), raw:m[0]};
+}
+function parseItems(t){
+  var items=[]; var work=t; var NUM='(\\d+|[一二兩三四五六七八九十]{1,3})';
+  var all=[]; MENU.forEach(function(it){ it.alias.forEach(function(a){ all.push({a:a,it:it}); }); });
+  all.sort(function(x,y){return y.a.length-x.a.length;});
+  all.forEach(function(e){
+    var idx; while((idx=work.indexOf(e.a))>=0){
+      var after=work.slice(idx+e.a.length), before=work.slice(0,idx), q=null, m;
+      if((m=after.match(new RegExp('^\\s*[x×*]?\\s*'+NUM+'\\s*(個|顆|條|份|盒|入|塊|顆)?')))){ q=cnNum(m[1]); work=before+'＿'.repeat(e.a.length+m[0].length)+after.slice(m[0].length); }
+      else if((m=before.match(new RegExp(NUM+'\\s*(個|顆|條|份|盒|入|塊)\\s*$')))){ q=cnNum(m[1]); work=before.slice(0,before.length-m[0].length)+'＿'.repeat(m[0].length+e.a.length)+after; }
+      else { q=1; work=before+'＿'.repeat(e.a.length)+after; }
+      var ex=items.filter(function(i){return i.name===e.it.name;})[0];
+      if(ex) ex.qty+=q; else items.push({name:e.it.name, short:e.it.short, price:e.it.price, qty:q});
+    }
+  });
+  return items;
+}
+
+var S; function blank(){ return {msgs:[], orders:[], seq:0, view:'date'}; }
+try{ S=JSON.parse(localStorage.getItem(KEY)||'null'); }catch(e){ S=null; }
+var fresh=!S; if(!S) S=blank();
+function save(){ try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} }
+
+function botReply(who,text){
+  var t=norm(text), low=t.toLowerCase();
+  if(/^(確認|確定|ok|好|好的|沒問題|可以)[!！。～~]*$/i.test(t.trim())){
+    var p=S.orders.filter(function(o){return o.who===who && o.status==='待確認';}).pop();
+    if(p){ p.status='已確認'; return {text:'收到！訂單 '+p.id+' 已確認。\n'+mdw(p.date)+' '+p.time+' 來店取貨，到了報 LINE 名字「'+who+'」就可以。', tag:'auto', touched:p.id}; }
+    return {text:'目前沒有要確認的訂單喔。要預訂的話直接傳日期、品項、數量。', tag:'auto'};
+  }
+  if(/取消/.test(t)){
+    var c=S.orders.filter(function(o){return o.who===who && (o.status==='待確認'||o.status==='已確認');}).pop();
+    if(c){ c.status='已取消'; return {text:'訂單 '+c.id+' 已取消，下次再來！', tag:'auto', touched:c.id}; }
+  }
+  var items=parseItems(t);
+  if(items.length){
+    var d=parseDate(t), tm=parseTime(t), warn=[];
+    var date=d?d.date:null; if(!date){ var tmr=new Date(); tmr.setDate(tmr.getDate()+1); date=ymd(tmr); warn.push('沒看到日期，先幫你排明天'); }
+    var dow=new Date(date+'T00:00:00').getDay(); if(dow===1) warn.push('那天是週一公休，要不要換一天？');
+    var time=tm?tm.time:'14:00'; if(!tm) warn.push('沒寫取貨時間，先記下午 2 點');
+    else if(time<'10:00'||time>'19:00') warn.push('營業時間是 10:00–19:00，時間可能要調整');
+    S.seq++; var id='#'+String(S.seq).padStart(3,'0');
+    var total=items.reduce(function(s,i){return s+i.qty*i.price;},0);
+    var o={id:id, who:who, date:date, time:time, items:items, total:total, status:'待確認', at:new Date().toISOString()};
+    S.orders.push(o);
+    return {card:o, warn:warn, tag:'auto', touched:id};
+  }
+  for(var i=0;i<FAQ.length;i++){ var f=FAQ[i]; if(f.k.some(function(k){return low.indexOf(k)>=0;})){
+    var a=f.a==='__MENU__' ? '今天的品項（價格是示範用）：\n'+MENU.map(function(m){return '・'+m.name+'　NT$'+m.price;}).join('\n') : f.a;
+    return {text:a, tag:f.human?'human':'auto'}; } }
+  return {text:'這題我還不會回答，已經轉給店長，營業時間內會回你。\n也可以點下面的常見問題看看。', tag:'human'};
+}
+
+var msgsEl=document.getElementById('msgs');
+function renderMsgs(){
+  var h='<div class="daymark">今天</div>';
+  S.msgs.forEach(function(m){
+    if(m.from==='me'){ h+='<div class="row me"><div class="bwrap"><span class="nick" style="color:#fff">'+esc(m.who)+'</span><div class="bubble">'+esc(m.text)+'</div><span class="meta">已讀 '+m.t+'</span></div></div>'; return; }
+    var body;
+    if(m.card){ var o=S.orders.filter(function(x){return x.id===m.card;})[0]; if(!o){ body='<div class="bubble">（訂單已清除）</div>'; } else {
+      body='<div class="order-card" data-testid="order-card"><header>訂單 '+o.id+'・'+esc(o.who)+'</header><ul>'+o.items.map(function(i){return '<li><span>'+esc(i.name)+' × '+i.qty+'</span><span>NT$'+(i.qty*i.price)+'</span></li>';}).join('')+'</ul>'+
+        '<div class="sum"><span>取貨 '+mdw(o.date)+' '+o.time+'</span><span>NT$'+o.total+'</span></div>'+
+        '<div class="hint">'+(m.warn&&m.warn.length?'⚠ '+esc(m.warn.join('；'))+'<br>':'')+'沒問題請回「確認」，要改直接重打一次。</div></div>'; } }
+    else body='<div class="bubble">'+esc(m.text)+'</div>';
+    h+='<div class="row"><div class="av">麥</div><div class="bwrap"><span class="nick">麥芽巷烘焙</span>'+body+'<span class="auto'+(m.tag==='human'?' human':'')+'">'+(m.tag==='human'?'已轉真人':'自動回覆')+'</span></div></div>';
+  });
+  msgsEl.innerHTML=h; msgsEl.scrollTop=msgsEl.scrollHeight;
+}
+var lastTouched=null;
+function send(text, who){
+  text=text.trim(); if(!text) return; who=who||document.getElementById('who').value;
+  S.msgs.push({from:'me', who:who, text:text, t:nowHM()});
+  var r=botReply(who,text);
+  S.msgs.push({from:'shop', text:r.text, card:r.card?r.card.id:null, warn:r.warn, tag:r.tag});
+  lastTouched=r.touched||null; save(); renderMsgs(); renderSheet();
+}
+
+// 試算表
+var STC={'待確認':'st-pending','已確認':'st-ok','已取貨':'st-done','已取消':'st-cancel'};
+var STO=['待確認','已確認','已取貨','已取消'];
+function lines(){ var L=[]; S.orders.forEach(function(o){ o.items.forEach(function(i){ L.push({o:o, it:i}); }); }); return L; }
+var COLS=['訂單','取貨日','時間','LINE 暱稱','品項','數量','金額','狀態','收單時間'];
+function cells(l){ var at=new Date(l.o.at); return [l.o.id, mdw(l.o.date), l.o.time, l.o.who, l.it.name, l.it.qty, 'NT$'+(l.it.qty*l.it.price), '<button class="chip '+STC[l.o.status]+'" data-id="'+l.o.id+'" title="點一下換狀態">'+l.o.status+'</button>', (at.getMonth()+1)+'/'+at.getDate()+' '+pad(at.getHours())+':'+pad(at.getMinutes())]; }
+function renderSheet(){
+  var g=document.getElementById('grid'), v=S.view, L=lines(), rows=[], letters='ABCDEFGHI';
+  var header; 
+  if(v==='prep'){
+    header=['取貨日','品項','合計數量','訂單數','（不含已取消）'];
+    var map={}; L.filter(function(l){return l.o.status!=='已取消';}).forEach(function(l){ var k=l.o.date+'|'+l.it.name; if(!map[k]) map[k]={date:l.o.date,name:l.it.name,q:0,n:{}}; map[k].q+=l.it.qty; map[k].n[l.o.id]=1; });
+    var arr=Object.keys(map).map(function(k){return map[k];}).sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:a.name.localeCompare(b.name,'zh-Hant');});
+    var cur=null; arr.forEach(function(r){ if(r.date!==cur){ cur=r.date; rows.push({group:mdw(r.date)+' 要準備'}); } rows.push({c:[mdw(r.date), r.name, r.q, Object.keys(r.n).length, ''], num:[2,3]}); });
+  } else {
+    header=COLS;
+    var key={date:function(l){return l.o.date+' '+l.o.time+' '+l.o.id;}, status:function(l){return STO.indexOf(l.o.status)+' '+l.o.date+' '+l.o.time;}, item:function(l){return l.it.name+' '+l.o.date+' '+l.o.time;}}[v];
+    var grp={date:function(l){return mdw(l.o.date);}, status:function(l){return l.o.status;}, item:function(l){return l.it.name;}}[v];
+    L.sort(function(a,b){var x=key(a),y=key(b);return x<y?-1:x>y?1:0;});
+    var cur2=null; L.forEach(function(l){ var gname=grp(l); if(gname!==cur2){ cur2=gname; rows.push({group:gname}); } rows.push({c:cells(l), num:[5,6], id:l.o.id}); });
+  }
+  var h='<thead><tr><th class="rn"></th>'+header.map(function(_,i){return '<th>'+letters[i]+'</th>';}).join('')+'</tr></thead><tbody>';
+  h+='<tr class="hdr"><td class="rn">1</td>'+header.map(function(c){return '<td>'+c+'</td>';}).join('')+'</tr>';
+  var rn=2;
+  rows.forEach(function(r){
+    if(r.group){ h+='<tr class="group"><td class="rn">'+(rn++)+'</td><td colspan="'+header.length+'">'+esc(r.group)+'</td></tr>'; return; }
+    h+='<tr'+(r.id&&r.id===lastTouched?' class="new"':'')+' data-row><td class="rn">'+(rn++)+'</td>'+r.c.map(function(c,i){ var raw=(typeof c==='string'&&c.indexOf('<button')===0)?c:esc(c); return '<td'+(r.num.indexOf(i)>=0?' class="n"':'')+'>'+raw+'</td>'; }).join('')+'</tr>';
+  });
+  for(var k=0;k<Math.max(4,14-rn);k++){ h+='<tr><td class="rn">'+(rn++)+'</td>'+header.map(function(){return '<td></td>';}).join('')+'</tr>'; }
+  g.innerHTML=h+'</tbody>';
+  document.getElementById('row-count').textContent=S.orders.length+' 筆訂單';
+  var pend=S.orders.filter(function(o){return o.status==='待確認';}).length;
+  document.getElementById('tab-count').textContent='（'+S.orders.length+'）';
+  document.querySelectorAll('#stabs button').forEach(function(b){ b.setAttribute('aria-selected', b.dataset.view===v?'true':'false'); });
+}
+document.getElementById('grid').addEventListener('click',function(e){
+  var chip=e.target.closest('.chip');
+  if(chip){ var o=S.orders.filter(function(x){return x.id===chip.dataset.id;})[0]; o.status=STO[(STO.indexOf(o.status)+1)%STO.length]; lastTouched=o.id; save(); renderSheet(); return; }
+  var td=e.target.closest('td'); if(!td||td.classList.contains('rn')) return;
+  document.querySelectorAll('.grid td.sel').forEach(function(x){x.classList.remove('sel');});
+  td.classList.add('sel'); var tr=td.parentNode; var ci=Array.prototype.indexOf.call(tr.children,td);
+  document.getElementById('ref').textContent='ABCDEFGHI'[ci-1]+tr.querySelector('.rn').textContent; document.getElementById('fxval').textContent=td.textContent;
+});
+document.getElementById('stabs').addEventListener('click',function(e){ var b=e.target.closest('button'); if(!b) return; S.view=b.dataset.view; save(); renderSheet(); });
+document.getElementById('export').addEventListener('click',function(){
+  var rows=[].map.call(document.querySelectorAll('#grid tbody tr'),function(tr){ return [].slice.call(tr.children,1).map(function(td){return '"'+td.textContent.replace(/"/g,'""')+'"';}).join(','); }).filter(function(r){return r.replace(/[",]/g,'');});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['\ufeff'+rows.join('\n')],{type:'text/csv'})); a.download='麥芽巷訂單-'+S.view+'.csv'; a.click();
+});
+document.getElementById('composer').addEventListener('submit',function(e){ e.preventDefault(); var i=document.getElementById('text'); send(i.value); i.value=''; i.focus(); });
+var q=document.getElementById('quick'); QUICK.forEach(function(t){ var b=document.createElement('button'); b.type='button'; b.textContent=t; b.addEventListener('click',function(){send(t);}); q.appendChild(b); });
+document.querySelectorAll('.tabs button').forEach(function(b){ b.addEventListener('click',function(){ document.querySelectorAll('.tabs button').forEach(function(x){x.setAttribute('aria-selected',x===b?'true':'false');}); document.getElementById('chat').hidden=b.dataset.pane!=='chat'; document.getElementById('sheet').hidden=b.dataset.pane!=='sheet'; }); });
+document.getElementById('reset').addEventListener('click',function(){ localStorage.removeItem(KEY); location.reload(); });
+
+if(fresh){
+  var t=new Date(); var plus=function(n){var d=new Date(t);d.setDate(d.getDate()+n);return (d.getMonth()+1)+'/'+d.getDate();};
+  send('請問週一有開嗎？','豆花');
+  send(plus(2)+' 可頌4個、鹽奶油捲 六個 下午3點半拿','豆花');
+  send('確認','豆花');
+  send('我要訂 '+plus(3)+' 巴斯克一個 肉桂捲x3 早上11點','小熊');
+  send('後天 歐包2條 晚上6點','橘子');
+}
+renderMsgs(); renderSheet();
+})();
+</script>
+</body>
+</html>
