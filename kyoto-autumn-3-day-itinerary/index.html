@@ -133,6 +133,19 @@ footer a{color:var(--ink2)}
 @media (max-width:420px){ .band span:first-child{display:none} .band{justify-content:flex-end} .top nav a.hide-s{display:none} }
 </style>
 <script data-goatcounter="https://routelab.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script>
+(function(){
+  var q=new URLSearchParams(location.search), c=q.get('utm_content');
+  if(!c) return;
+  var clean=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,64);};
+  c=clean(c); if(!c) return;
+  var t=(q.get('utm_campaign')||'').slice(0,64), n=0;
+  (function send(){
+    if(window.goatcounter&&window.goatcounter.count){window.goatcounter.count({path:'pin-'+c,title:t,event:true});}
+    else if(n++<50){setTimeout(send,200);}
+  })();
+})();
+</script>
 </head>
 <body style="--c:#c8312a;--bc:#c8312a;--bt:#fff">
 <div class="wrap">
