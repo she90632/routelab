@@ -1151,7 +1151,7 @@ run.lastStage = "步驟 2/3：下載語言資料 " + code + " " + Math.round(got
 ocrSetProgress(run);
 });
 run.log.push(tag + " " + code + " OK " + bytes.length + " B / " + (Date.now() - t0) + " ms");
-langs.push({ code: code, data: bytes });
+langs.push(code);
 }
 remain = OCR_DEADLINE_MS - (Date.now() - run.startedAt);
 var cap = Math.min(40000, remain - 10000);
@@ -1174,7 +1174,7 @@ if(run.done || run.cancelled) return null;
 var cwStarted = Date.now();
 try{
 wp = Tesseract.createWorker(langs, 1, {
-workerPath: cfg.workerPath, corePath: cfg.corePath, cacheMethod: "none", logger: logger,
+workerPath: cfg.workerPath, corePath: cfg.corePath, langPath: new URL(cfg.langBase, location.href).href, gzip: true, cacheMethod: "none", logger: logger,
 errorHandler: function(e){ run.log.push(tag + " worker error: " + ocrDescribeRejection(e)); }
 });
 }catch(syncErr){
